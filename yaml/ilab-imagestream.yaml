@@ -20,13 +20,13 @@ spec:
   tags:
   - annotations:
       opendatahub.io/notebook-python-dependencies: '[{"name":"JupyterLab","version":"3.6"},{"name":"Notebook","version":"6.5"}]'
-      opendatahub.io/notebook-software: '[{"name":"Python","version":"v3.9"}]'
+      opendatahub.io/notebook-software: '[{"name":"Python","version":"v3.11"}]'
       opendatahub.io/workbench-image-recommended: "true"
     from:
       kind: DockerImage
-      name: ghcr.io/kwkoo/minimal-ilab:2023.2
+      name: ghcr.io/kwkoo/minimal-ilab:2024b
     importPolicy:
       importMode: Legacy
-    name: "2023.2"
+    name: "2024b"
     referencePolicy:
       type: Source

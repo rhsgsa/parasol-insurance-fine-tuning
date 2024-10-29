@@ -44,7 +44,7 @@ spec:
           mountPath: /data
       containers:
       - name: llama-cpp
-        image: ghcr.io/kwkoo/minimal-gpu-ilab:2023.2
+        image: ghcr.io/kwkoo/minimal-gpu-ilab:2024b
         command:
         - python
         - -m
