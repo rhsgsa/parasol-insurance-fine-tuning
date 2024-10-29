@@ -38,6 +38,13 @@ deploy-model:
 	@echo "deploying inference service..."
 	oc apply -n $(LLM_PROJ) -f $(BASE)/yaml/finetuned.yaml
 
+
+.PHONY: clean-model
+clean-model:
+	@echo "cleaning inference service..."
+	oc delete -n $(LLM_PROJ) -f $(BASE)/yaml/finetuned.yaml
+
+
 .PHONY: modify-showroom-git-repo
 modify-showroom-git-repo:
 	$(BASE)/scripts/modify-showroom-git-repo

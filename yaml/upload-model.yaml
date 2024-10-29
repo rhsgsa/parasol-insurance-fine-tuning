@@ -26,7 +26,7 @@ spec:
         - "-c"
         - |
           echo "downloading model..."
-          curl -LO https://huggingface.co/instructlab/merlinite-7b-lab-GGUF/resolve/main/merlinite-7b-lab-Q4_K_M.gguf
+          curl -Lo model.gguf "$MODEL_URL"
 
           until curl -s -o /dev/null $AWS_ENDPOINT_URL_S3 2>/dev/null; do
             echo "waiting for minio API..."
@@ -38,7 +38,7 @@ spec:
           mc mb minio/models
 
           echo "uploading to s3 bucket..."
-          mc put merlinite-7b-lab-Q4_K_M.gguf minio/models/finetuned/
+          mc put model.gguf minio/models/finetuned/
         env:
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
@@ -54,6 +54,8 @@ spec:
           value: "http://minio:9000"
         - name: MC_INSECURE
           value: "true"
+        - name: MODEL_URL
+          value: "https://huggingface.co/ltsai/parasol-chat-ilab19-test-Q4_K_M-GGUF/resolve/main/parasol-chat-ilab19-test-q4_k_m.gguf"
         resources: {}
       restartPolicy: Never
 status: {}

@@ -27,7 +27,7 @@ spec:
             sleep 5
           done
           mc alias set minio $AWS_ENDPOINT_URL_S3 $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY
-          mc get minio/models/finetuned/merlinite-7b-lab-Q4_K_M.gguf /data/model.gguf
+          mc get minio/models/$MODEL_PATH /data/model.gguf
         env:
         - name: AWS_ACCESS_KEY_ID
           value: minio
@@ -37,6 +37,8 @@ spec:
           value: "http://minio.ic-shared-minio.svc:9000"
         - name: MC_INSECURE
           value: "true"
+        - name: MODEL_PATH
+          value: finetuned/model.gguf
         volumeMounts:
         - name: data
           mountPath: /data

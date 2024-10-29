@@ -41,6 +41,67 @@ InstructLab is particularly useful for organizations that want to leverage priva
 
 As you work with InstructLab, you will see the terms _Skills_ and _Knowledge_. What is the difference between Skills and Knowledge? A simple analogy is to think of a skill as teaching someone how to fish. Knowledge, on the other hand, is knowing that the best place to catch a Bass is when the sun is setting while casting your line near the trunk of a tree along the bank.
 
+== Chatting with the Un-Finetuned Model
+
+Before we proceed with fine-tuning the model, let's try chatting with a model that has not been fine-tuned yet.
+
+* Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}/[{rhoai} Dashboard application,window=_blank] in a new window or tab and navigate to the Data Science Projects menu on the left:
++
+[.bordershadow]
+image::02/02-02-ds-proj-nav.png[]
+
+* Open the project called {user} and click the `Create workbench` button:
++
+[.bordershadow]
+image::03/08-create-workbench.png[]
+
+* Set the `Name` field to `ilab`, the `Image selection` field to `Instructlab`, the `Container size` field to `Standard`, the `Accelerator` field to `None`, and click the `Create workbench` button.
++
+[.bordershadow]
+image::03/08-create-workbench-form.png[]
+
+* After the workbench has started, click on the `Open` link to open the workbench in a new tab or window.
+
+* Click on the `Terminal` icon in the Launcher:
++
+[.bordershadow]
+image::03/08-launcher.png[]
+
+* After the terminal appears, enter the following on the command prompt to initialize the `ilab` command-line interface:
++
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+ilab config init --non-interactive --model-path /data/model.gguf
+----
+
+* After the `config.yaml` file is generated, enter the following on the command prompt to start chatting with a pre-deployed fine-tuned model:
++
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+ilab model chat --endpoint-url {unfinetuned-endpoint}
+----
+
+* The following should appear on the terminal:
++
+[source,bash]
+----
+╭────────────────────────────── system ──────────────────────────────╮
+│ Welcome to InstructLab Chat w/ /DATA/MODEL.GGUF (type /h for help) │
+╰────────────────────────────────────────────────────────────────────╯
+----
+
+* Start chatting with the fine-tuned model. Ask the model some Parasol-specific questions:
+
+** Does Parasol insurance policies include  loss of income cover if the insured driver is at fault?
+
+** Will Parasol insurance cover the cost of car rental if my car is undriveable as a result of an accident?
+
+** What is Apex plus from parasol insurance?
+
+* When you are done, type `exit` to exit from the chat.
+
 == Model Fine-Tuning for the Insurance Organization
 
 In the next few sections, we'll walk through the process of fine-tuning an AI model using InstructLab. We'll start by setting up our environment, generating synthetic training data, training the model, and then interacting with it. We will build upon that and delve further into the biggest insurance company in North America, Parasol, which has the most extensive customer base. Parasol Insurance gets many requests to process claims, questions about different products, etc. These requests are not just internal but also external.
@@ -125,6 +186,136 @@ Each `qna.yaml` file requires a minimum of five question-answer pairs. The `qna.
 
 Now that we understand the constructs of the taxonomy's knowledge, let's go ahead and look at the process of creating a knowledge base, which can be used to train the LLM. This will help our applications that utilize the LLM, and agents directly chatting with the model. Furthermore, it will help with claims processing, fraud detection, or anyone who would like to ask the LLM about products, coverage, laws, and some information about Parasol itself.
 
+==== Create a structure for Parasol insurance knowledge
+
+We should create a knowledge folder structure that we can add to later as we add more knowledge and for our peers to also understand how its structured. Lets create a structure like this `knowledge > economy > finance > insurance > parasol`. Enter the following in the terminal:
++
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+mkdir -p ~/taxonomy/knowledge/economy/finance/insurance/parasol
+----
+
+Perfect, now we have the basic working structure to add in specific knowledge about our organization.
+
+== Curating the Data for our AI Model
+
+Let's now add the following taxonomy knowledge file for Parasol Insurance. Each section of this file addresses different aspects of Parasol's insurance policies:
+
+* Like any insurance company on the planet, data is stored into multiple systems, files etc. Employees at Parasol Insurance either using the system for the first time or using it for e.g. detecting fraud, trying to understand the glossary, acronyms etc. A good example is `Policy ID`, a unique ID for policy in our database systems. The LLM does not know about this. By adding this, we can ensure that once a claims agent or an application asks about a policy ID, the LLM can give reasonable answers and suggestions.
+
+* Information about the Parasol Insurance company, and an overview of product details. This will enable the LLM to give answers on a high level about the different offerings, formulate a context about Parasol Insurance, its history, etc.
+
+* Information specific to policies in relation to the different products. This will help our claims processing agents to ask questions about specific cases and scenarios to the LLM. The LLM should be able to suggest remedies or further knowledge to look into.
+
+=== Create knowledge file
+
+Download {qna-url}[`qna.yaml`^] ino the `parasol` folder. "qna" is short for "questions and answers". To do this, enter the following into the terminal:
++
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+curl -Lo ~/taxonomy/knowledge/economy/finance/insurance/parasol/qna.yaml {qna-url}
+----
+
+And now lets also create an `attribution.txt` file for citing sources. Enter the following to download {attribution-url}[`attribution.txt`^] to the same folder `parasol`:
++
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+curl -Lo ~/taxonomy/knowledge/economy/finance/insurance/parasol/attribution.txt {attribution-url}
+----
+
+=== Check that the Taxonomy is Recognized by InstructLab
+
+Now that we've added data, let's check that the taxonomy is recognized by InstructLab. This will help us ensure that the data we've added is valid and can be used to generate synthetic training data.
+
+Let's navigate to the home directory:
+
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+cd
+----
+
+Run the following command to check the validity of the taxonomy:
+
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+ilab taxonomy diff
+----
+
+After running the above command you should be able to see the following output.
+
+[source,bash]
+----
+Taxonomy in /opt/app-root/src/.local/share/instructlab/taxonomy is valid :)
+----
+
+If you do not see output similar to above, you may not have added in all of the Q&A file. This is important as the model will use this file to generate synthetic data in the next section.
+
+== Generating Synthetic Training Data & Training the New Model
+
+Now that we've added some initial data, let's use InstructLab to generate synthetic training data. Large Language Models inherently require a large amount of data to be effective, and it can be difficult to find enough real-world data for a niche domain. However, by using InstructLab, we can generate synthetic data that can be used to train the model.
+
+=== TODO: Regenerate `config.yaml` because we need the model to point to mistral
+
+=== Download the model
+
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+ilab model download
+----
+
+=== Run the data generation command:
+
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+ilab data generate --sdg-scale-factor 1 --enable-serving-output
+----
+
+To reduce the amount of time the generation process takes, we are setting the *"--sdg-scale-factor"* to `1` (The number of instructions to generate for each seed
+example), the default for this value is `30`. If we were generating data for a production deployment we would likely set this value higher.
+
+This process may take some time (up to 25 minutes for this lab), depending on the amount of data and the computational resources available. Feel free to wait, or stop the process with kbd:[CTRL+C] as we will not be using these files in the next step in the interest of time.
+
+Once the generation stage is complete, you should see something like this:
+
+[source,console]
+----
+$ ilab data generate --sdg-scale-factor 1
+Filter: 100%|████████████████████████████████████████████████| 42/42 [00:00<00:00, 2836.45 examples/s]
+Filter: 100%|████████████████████████████████████████████████| 28/28 [00:00<00:00, 4355.46 examples/s]
+Flattening the indices: 100%|████████████████████████████████| 22/22 [00:00<00:00, 3207.77 examples/s]
+Map: 100%|███████████████████████████████████████████████████| 22/22 [00:00<00:00, 2485.04 examples/s]
+Flattening the indices: 100%|████████████████████████████████| 20/20 [00:00<00:00, 2395.65 examples/s]
+Casting to class labels: 100%|███████████████████████████████| 20/20 [00:00<00:00, 1306.68 examples/s]
+INFO 2024-10-02 16:47:28,764 instructlab.sdg.eval_data:126: Saving MMLU Dataset /opt/app-root/src/.local/share/instructlab/datasets/node_datasets_2024-10-02T16_21_57/mmlubench_knowledge_economy_finance_insurance_parasol.jsonl
+Creating json from Arrow format: 100%|█████████████████████████████████| 1/1 [00:00<00:00, 567.10ba/s]
+INFO 2024-10-02 16:47:28,780 instructlab.sdg.eval_data:130: Saving MMLU Task yaml /opt/app-root/src/.local/share/instructlab/datasets/node_datasets_2024-10-02T16_21_57/knowledge_economy_finance_insurance_parasol_task.yaml
+Map:   0%|                                                             | 0/722 [00:00<?, ? examples/s]WARNING 2024-10-02 16:47:28,802 instructlab.sdg.datamixing:223: Failed to split generated q&a: Parasol Insurance Company', founded in 1936 by James Falkner and James Labocki, is one of the largest and most well-known auto insurance companies in the United States, offering various insurance products for personal vehicles, motorcycles, homeowners, renters, boats, RVs, life insurance, business insurance, and identity theft protection. Parasol is known for its memorable advertising campaigns, user-friendly digital platforms, and competitive pricing, as well as its strong financial strength indicated by high ratings from agencies like A.M. Best.
+----
+
+The result of this is a number of files which you can inspect in the `~/.local/share/instructlab/datasets` directory. These files are used in the following _training_ phase. Open this directory by running the following command in the Terminal:
+
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+ls ~/.local/share/instructlab/datasets
+----
+
+You can examine the contents of the files by using the `cat` command. For example, check out the file whose name starts with `messages_merlinite`. These are sample questions generated based on the content of our Parasol data.
+
+=== Training the Model with New Data
+
+With our synthetic data generated, we should now be in a position to train the model.  Because we only created 1 sample and due to time constraints we're not going to perform the actual training in this lab.
+
+If we were to do this, we would again use the "ilab" CLI with the "model train" command. Something like `ilab model train --device cuda`. Depending on the hardware available, this can take anywhere from several minutes to several hours or days. Once this process was finished we would then have a model we can serve locally with ilab to test our results.
+
+
 === TODO: Add section that shows the rest of the taxonomy creation and training process
 
 * https://raw.githubusercontent.com/rh-rad-ai-roadshow/dev-guides/refs/heads/main/content/modules/ROOT/pages/module-ilab.adoc[source document^]
@@ -135,31 +326,9 @@ Now that we understand the constructs of the taxonomy's knowledge, let's go ahea
 
 === Interacting with the Model
 
-A fine-tuned model has been deployed on the cluster. Let's try to chat with it:
+A fine-tuned model has been deployed on the cluster. Let's try to chat with it.
 
-* Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}/[{rhoai} Dashboard application,window=_blank] in a new window or tab and navigate to the Data Science Projects menu on the left:
-+
-[.bordershadow]
-image::02/02-02-ds-proj-nav.png[]
-
-* Then, open the project called {user} and click the `Create workbench` button:
-+
-[.bordershadow]
-image::03/08-create-workbench.png[]
-
-* Set the `Name` field to `ilab`, the `Image selection` field to `Instructlab`, the `Container size` field to `Standard`, the `Accelerator` field to `None`, and click the `Create workbench` button.
-+
-[.bordershadow]
-image::03/08-create-workbench-form.png[]
-
-* After the workbench has started, click on the `Open` link to open the workbench in a new tab or window.
-
-* Click on the `Terminal` icon in the Launcher:
-+
-[.bordershadow]
-image::03/08-launcher.png[]
-
-* After the terminal appears, enter the following on the command prompt to initialize the `ilab` command-line interface:
+* Enter the following on the command prompt to initialize the `ilab` command-line interface:
 +
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
