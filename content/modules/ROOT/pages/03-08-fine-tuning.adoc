@@ -131,7 +131,7 @@ Now that we understand the constructs of the taxonomy's knowledge, let's go ahea
 
 * https://github.com/rh-rad-ai-roadshow/dev-guides/[git repo^]
 
-
+* https://github.com/rhpds/showroom_instructlab_summit2024/blob/main/content/modules/ROOT/pages/index.adoc[Summit lab^]
 
 === Interacting with the Model
 
