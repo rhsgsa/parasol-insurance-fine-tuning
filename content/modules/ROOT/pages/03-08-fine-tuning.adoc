@@ -137,7 +137,7 @@ Now that we understand the constructs of the taxonomy's knowledge, let's go ahea
 
 A fine-tuned model has been deployed on the cluster. Let's try to chat with it:
 
-* Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}/[{rhoai} Dashboard application{openshift_cluster_ingress_domain}/,window=_blank] in a new window or tab and navigate to the Data Science Projects menu on the left:
+* Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}/[{rhoai} Dashboard application,window=_blank] in a new window or tab and navigate to the Data Science Projects menu on the left:
 +
 [.bordershadow]
 image::02/02-02-ds-proj-nav.png[]
@@ -179,9 +179,9 @@ ilab model chat --endpoint-url {finetuned-endpoint}
 +
 [source,bash]
 ----
-╭────────────────────────────────────────────────────────── system ───────────────────────────────────────────────────────────╮
-│ Welcome to InstructLab Chat w/ /DATA/MODEL.GGUF (type /h for help)                                                          │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭────────────────────────────── system ──────────────────────────────╮
+│ Welcome to InstructLab Chat w/ /DATA/MODEL.GGUF (type /h for help) │
+╰────────────────────────────────────────────────────────────────────╯
 ----
 
 * Start chatting with the fine-tuned model.
