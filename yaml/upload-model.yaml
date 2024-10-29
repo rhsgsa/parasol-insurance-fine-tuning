@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    job: upload-model
+  name: upload-model
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    job: upload-model
+  name: upload-model
+spec:
+  template:
+    metadata:
+      labels:
+        job: upload-model
+    spec:
+      serviceAccountName: upload-model
+      containers:
+      - image: ghcr.io/kwkoo/s3-utils
+        name: upload-model
+        command:
+        - /bin/bash
+        - "-c"
+        - |
+          echo "downloading model..."
+          curl -LO https://huggingface.co/instructlab/merlinite-7b-lab-GGUF/resolve/main/merlinite-7b-lab-Q4_K_M.gguf
+
+          until curl -s -o /dev/null $AWS_ENDPOINT_URL_S3 2>/dev/null; do
+            echo "waiting for minio API..."
+            sleep 5
+          done
+          mc alias set minio $AWS_ENDPOINT_URL_S3 $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY
+
+          echo "creating bucket..."
+          mc mb minio/models
+
+          echo "uploading to s3 bucket..."
+          mc put merlinite-7b-lab-Q4_K_M.gguf minio/models/finetuned/
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: minio-root-user
+              key: MINIO_ROOT_USER
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-root-user
+              key: MINIO_ROOT_PASSWORD
+        - name: AWS_ENDPOINT_URL_S3
+          value: "http://minio:9000"
+        - name: MC_INSECURE
+          value: "true"
+        resources: {}
+      restartPolicy: Never
+status: {}

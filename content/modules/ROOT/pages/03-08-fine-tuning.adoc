@@ -57,7 +57,7 @@ image::03/parasol-insurance-chat.png[Parasol Insurance]
 
 The approach of fine-tuning a model allows us to shape a language model to better understand a specific domain, and fill in the gaps in its knowledge. The InstructLab taxonomy provides a structured way to guide the model fine-tuning process, enabling us to add domain-specific knowledge to the model in a heirarchical manner, similar to the example below:
 
-image::ilab/instructlab-taxonomy.png[InstructLab Taxonomy]
+image::03/instructlab-taxonomy.png[InstructLab Taxonomy]
 
 Your role is crucial in this process. You'll see how to add  a knowledge domain to the LLM using the organization's specific information, knowledge that the LLM doesn't have and is specific to Parasol Insurance.
 
@@ -138,5 +138,53 @@ A fine-tuned model has been deployed on the cluster. Let's try to chat with it:
 [.bordershadow]
 image::02/02-02-ds-proj-nav.png[]
 
-* Then, open the project called {user}.
+* Then, open the project called {user} and click the `Create workbench` button:
++
+[.bordershadow]
+image::03/08-create-workbench.png[]
 
+* Set the `Name` field to `ilab`, the `Image selection` field to `Instructlab`, the `Container size` field to `Standard`, the `Accelerator` field to `None`, and click the `Create workbench` button.
++
+[.bordershadow]
+image::03/08-create-workbench-form.png[]
+
+* After the workbench has started, click on the `Open` link to open the workbench in a new tab or window.
+
+* Click on the `Terminal` icon in the Launcher:
++
+[.bordershadow]
+image::03/08-launcher.png[]
+
+* After the terminal appears, enter the following on the command prompt to initialize the `ilab` command-line interface:
++
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+ilab config init --non-interactive --model-path /data/model.gguf
+----
+
+* After the `config.yaml` file is generated, enter the following on the command prompt to start chatting with a pre-deployed fine-tuned model:
++
+[.console-input]
+[source,bash,subs="+attributes,macros+"]
+----
+ilab model chat --endpoint-url http://finetuned.ic-shared-llm.svc:8080/v1
+----
+
+* The following should appear on the terminal:
++
+[source,bash]
+----
+╭────────────────────────────────────────────────────────── system ───────────────────────────────────────────────────────────╮
+│ Welcome to InstructLab Chat w/ /DATA/MODEL.GGUF (type /h for help)                                                          │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+----
+
+* Start chatting with the fine-tuned model.
+
+* When you are done, type `exit` to exit from the chat, and `exit` once more to exit from the terminal.
+
+* Switch back to the OpenShift AI dashboard and click on switch for the `ilab` workbench to stop the workbench:
++
+[.bordershadow]
+image::03/08-stop-workbench.png[]

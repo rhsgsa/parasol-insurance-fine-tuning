@@ -1,0 +1,17 @@
+#!/bin/bash
+
+GIT_REPO_URL=https://github.com/rhsgsa/parasol-insurance-fine-tuning.git
+GIT_REPO_REF=fine-tuning-03
+
+set -e
+
+oc whoami >/dev/null
+
+for proj in $(oc get projects -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep showroom-); do
+  echo $proj
+  oc set env \
+    -n $proj \
+    deploy/showroom \
+    GIT_REPO_URL=$GIT_REPO_URL \
+    GIT_REPO_REF=$GIT_REPO_REF
+done

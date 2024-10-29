@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: finetuned
+  name: finetuned
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finetuned
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: finetuned
+    spec:
+      initContainers:
+      - name: download-model
+        image: ghcr.io/kwkoo/s3-utils
+        command:
+        - /bin/bash
+        - -c
+        - |
+          until curl -s -o /dev/null $AWS_ENDPOINT_URL_S3 2>/dev/null; do
+            echo "waiting for minio API..."
+            sleep 5
+          done
+          mc alias set minio $AWS_ENDPOINT_URL_S3 $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY
+          mc get minio/models/finetuned/merlinite-7b-lab-Q4_K_M.gguf /data/model.gguf
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          value: minio
+        - name: AWS_SECRET_ACCESS_KEY
+          value: minio123
+        - name: AWS_ENDPOINT_URL_S3
+          value: "http://minio.ic-shared-minio.svc:9000"
+        - name: MC_INSECURE
+          value: "true"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      containers:
+      - name: llama-cpp
+        image: ghcr.io/kwkoo/minimal-gpu-ilab:2023.2
+        command:
+        - python
+        - -m
+        - llama_cpp.server
+        - --host
+        - 0.0.0.0
+        - --port
+        - "8080"
+        - --model
+        - /data/model.gguf
+        - --n_gpu_layers
+        - "999"
+        livenessProbe:
+         httpGet:
+           path: /v1/models
+           port: 8080
+         initialDelaySeconds: 600
+        readinessProbe:
+         httpGet:
+           path: /v1/models
+           port: 8080
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        resources:
+          requests:
+            cpu: "1"
+            memory: 2Gi
+            nvidia.com/gpu: "1"
+          limits:
+            nvidia.com/gpu: "1"
+      volumes:
+      - name: data
+        emptyDir: {}
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: finetuned
+  name: finetuned
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: finetuned
+status:
+  loadBalancer: {}
