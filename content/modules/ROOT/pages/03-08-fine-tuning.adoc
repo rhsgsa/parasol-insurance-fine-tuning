@@ -1,0 +1,142 @@
+= AI Model Fine-Tuning
+include::_attributes.adoc[]
+
+== Goals of this lab
+
+As Parasol Insurance embraces the era of AI, we face a unique challenge: leveraging cutting-edge AI technology while maintaining strict control over our proprietary data and processes. This journey requires us to develop in-house AI capabilities that are as powerful as they are secure. The goal of this lab is to show you as a developer how to use open source AI tooling to fine-tune a foundation model using Parasol's proprietary data, producing an optimized and efficient LLM that can be used across a variety of use cases at Parasol. In this lab, you will:
+
+* Explore *fine-tuning* techniques for AI models, incorporating Parasol's unique insurance expertise into LLMs
+* Learn how to create and utilize a *custom knowledge base* for training AI models with organization-specific scenarios and regulations
+* Learn how the https://arxiv.org/abs/2403.01081[*LAB methodology*] generates synthetic training data and produces a specialized model while keeping data in-house
+* Gain hands-on experience in *serving* a customized AI model
+* Understand the *benefits and limitations* of fine-tuning compared to other AI customization methods
+
+=== Enhancing AI Models: RAG vs Fine-Tuning
+
+When customizing AI models, two techniques stand out: Retrieval-Augmented Generation (RAG) and fine-tuning.
+
+* *Fine-tuning* excels when you need precise, controlled outputs for specialized tasks using curated data. It's ideal for applications where security and compliance require embedding all data within the model. Fine-tuning is also suitable when you have clear use cases with specific task requirements.
+
+image::03/rag-vs-finetuning-1.png[RAG vs Fine-Tuning]
+
+* In contrast, *Retrieval-Augmented Generation (RAG)* is best when you need real-time access to dynamic knowledge bases, especially in environments with constantly updating information. RAG allows for scalability and handles out-of-domain queries effectively without the need for retraining, making it quick solution for improving model output. However, by providing contextual information to the model for each prompt, your expenses and computer resources may be higher than "baking-in" information into the model through fine-tuning.
+
+image::03/rag-vs-finetuning-2.png[RAG vs Fine-Tuning]
+
+== Get Started with Fine-Tuning
+
+Now that we've outlined Parasol's AI needs, let's dive into the process of meeting them. In this section, we'll explore how to use the InstructLab project to tailor a foundation language model to Parasol's specific requirements, focusing on the key areas we've identified.
+
+=== What is InstructLab?
+
+https://instructlab.ai/[InstructLab^] is an open-source project designed to enhance large language models (LLMs) for use in generative AI applications. It provides a novel approach to model alignment and fine-tuning, allowing developers and domain experts to add new knowledge and skills to pre-trained models with minimal data and computational resources. Key features of InstructLab include:
+
+* A taxonomy-driven approach to curating training data
+* Large-scale synthetic data generation
+* Iterative alignment tuning for continuous model improvement
+
+image::03/instructlab-components.png[InstructLab Overview]
+
+InstructLab is particularly useful for organizations that want to leverage private AI and keep their data in-house while still benefiting from state-of-the-art language models, without needing AI/ML or data science expertise.
+
+As you work with InstructLab, you will see the terms _Skills_ and _Knowledge_. What is the difference between Skills and Knowledge? A simple analogy is to think of a skill as teaching someone how to fish. Knowledge, on the other hand, is knowing that the best place to catch a Bass is when the sun is setting while casting your line near the trunk of a tree along the bank.
+
+== Model Fine-Tuning for the Insurance Organization
+
+In the next few sections, we'll walk through the process of fine-tuning an AI model using InstructLab. We'll start by setting up our environment, generating synthetic training data, training the model, and then interacting with it. We will build upon that and delve further into the biggest insurance company in North America, Parasol, which has the most extensive customer base. Parasol Insurance gets many requests to process claims, questions about different products, etc. These requests are not just internal but also external.
+
+Parasol Insurance's primary concern is ensuring that its staff is capable of handling such requests and has access to this information through a single interface rather than going through multiple systems to scrape documents and internal portal pages. To this end, you have been tasked with adding knowledge that will aid the following use cases.
+
+* Products and coverage (e.g., providing comprehensive policy and product information)
+* Basic knowledge of the Insurance rules (e.g., offering insights on relevant local regulations)
+* Responses to general claim questions and remedies (e.g., generating product-specific email templates)
+
+image::03/parasol-insurance-chat.png[Parasol Insurance]
+
+=== Preparing the Parasol Insurance Knowledge Base
+
+The approach of fine-tuning a model allows us to shape a language model to better understand a specific domain, and fill in the gaps in its knowledge. The InstructLab taxonomy provides a structured way to guide the model fine-tuning process, enabling us to add domain-specific knowledge to the model in a heirarchical manner, similar to the example below:
+
+image::ilab/instructlab-taxonomy.png[InstructLab Taxonomy]
+
+Your role is crucial in this process. You'll see how to add  a knowledge domain to the LLM using the organization's specific information, knowledge that the LLM doesn't have and is specific to Parasol Insurance.
+
+=== Understanding the Knowledge Structure
+
+Knowledge consists of data and facts and is backed by documents. When you create knowledge for a model, you're giving it additional data to more accurately answer questions. Knowledge contributions in this project contain a few things:
+
+* A file in a https://github.com/rh-rad-ai-roadshow/parasol_knowledge[Git repository^] that holds your information. For example, these repositories can include markdown versions of information on: Parasol products, insurance domain knowledge, claims processing etc.
+* A `qna.yaml` file that asks and answers questions about the information in the git repository, with desirable responses.
+* An `attribution.txt` that includes the sources for the information used in the `qna.yaml`, which aids in transparency and accountability.
+
+LLMs have inherent limitations that make certain tasks extremely difficult, like doing math problems. They're great at other tasks, like creative writing. And they could be better at things like logical reasoning. However, these limitations can be overcome by providing them with the right knowledge (and skills, https://www.youtube.com/watch?v=_kbq-npuMC0[which InstructLab can also help with^]). An LLM with knowledge helps it create a basis of information that it can learn from, then you can teach it to use this knowledge via the `qna.yaml` files.
+
+In our case we want the LLM to learn more about Parasol Insurance by supplying this specific information in the form of a basic YAML file named `qna.yaml`:
+
+[source,yaml]
+----
+version: 3<1>
+domain: insurance<2>
+created_by: sshaaf<3>
+seed_examples:<4>
+  - context: |<5>
+      In the insurance industry, accurately predicting the likelihood of claims is
+      essential for risk assessment and policy pricing. However, Parasol insurance
+      claims datasets frequently suffer from class imbalance, where the number of
+      non-claims instances far exceeds that of actual claims.
+    questions_and_answers:
+      - question: What is class imbalance in the context of Parasol insurance claims datasets?
+        answer: |
+          Class imbalance refers to the situation where the number of non-claims
+          instances far exceeds that of actual claims, making predictive modeling
+          difficult and potentially leading to biased models.
+      - question: What types of information are included in the Policyholder Information feature?
+        answer: |
+          Policyholder Information includes demographic details like age, gender,
+          occupation, marital status, and geographical location, which are critical
+          for assessing risk.
+      # more questions and answers
+document_outline: |<6>
+  Information about the Parasol insruance claims data glossary, terms and how
+  to read and understand claims. The information is related to the Parasol
+  insurance internal records and systems.
+document:<7>
+  repo: https://github.com/rh-rad-ai-roadshow/parasol_knowledge.git
+  commit: 07227df21a3a786d15ae5b88ece2c33bd78ee36a
+  patterns:<8>
+    - Parasol_auto_insurance.md
+    - Insurance_claims_data.md
+    - teen_driving_rules.md
+    - claims_cost_data.md
+----
+
+Each `qna.yaml` file requires a minimum of five question-answer pairs. The `qna.yaml` format must include the following fields:
+
+<1> `version`: Defines the InstructLab taxonomy schema version
+<2> `domain`: Category of the knowledge
+<3> `created_by`: The author of the contribution, typically a GitHub username
+<4> `seed_examples`: Five or more examples sourced from the provided knowledge documents, representing a `question` for the model and desired `response`
+<5> `context`: A chunk of information from the knowledge document.
+<6> `document_outline`: An outline of the document containing the knowledge you're adding to the model.
+<7> `document`: The source of your knowledge contribution, consisting of a `repo` URL pointing to the knowledge markdown files, and `commit` identifier for the specific commit that contains the files
+<8> `patterns`: A list of glob patterns specifying the markdown files in your repository that should be used during training. We have placed all the knowledge documents in the https://github.com/rh-rad-ai-roadshow/parasol_knowledge[parasol-knowledge] repository.
+
+=== Creating the Parasol Insurance Knowledge Base
+
+Now that we understand the constructs of the taxonomy's knowledge, let's go ahead and look at the process of creating a knowledge base, which can be used to train the LLM. This will help our applications that utilize the LLM, and agents directly chatting with the model. Furthermore, it will help with claims processing, fraud detection, or anyone who would like to ask the LLM about products, coverage, laws, and some information about Parasol itself.
+
+=== TODO: Add section that shows the rest of the taxonomy creation and training process
+
+https://raw.githubusercontent.com/rh-rad-ai-roadshow/dev-guides/refs/heads/main/content/modules/ROOT/pages/module-ilab.adoc[source document^]
+
+=== Interacting with the Model
+
+A fine-tuned model has been deployed on the cluster. Let's try to chat with it:
+
+* Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}/[{rhoai} Dashboard application{openshift_cluster_ingress_domain}/,window=_blank] in a new window or tab and navigate to the Data Science Projects menu on the left:
++
+[.bordershadow]
+image::02/02-02-ds-proj-nav.png[]
+
+* Then, open the project called {user}.
+
