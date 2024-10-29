@@ -22,6 +22,7 @@
 ** xref:03-05-retrieval-augmented-generation.adoc[3.5 Retrieval-Augmented Generation]
 ** xref:03-06-confidence-check.adoc[3.6 Confidence-check pipeline]
 ** xref:03-07-prompt-engineering.adoc[3.7 Prompt Engineering Exercise (Optional)]
+** xref:03-08-fine-tuning.adoc[3.8 AI Model Fine-Tuning]
 
 * 4. Image Processing
 ** xref:04-01-over-approach.adoc[4.1 Overall Approach]
