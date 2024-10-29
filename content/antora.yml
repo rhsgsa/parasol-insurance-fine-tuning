@@ -35,6 +35,7 @@ asciidoc:
     company-name: "Parasol Insurance"
     ic-lab: "lab"
     ic: "{company-name} {ic-lab}"
+    finetuned-endpoint: http://finetuned.ic-shared-llm.svc:8080/v1
 
   extensions:
     - ./content/lib/tab-block.js

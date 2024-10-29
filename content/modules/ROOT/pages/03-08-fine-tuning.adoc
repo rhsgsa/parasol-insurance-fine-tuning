@@ -172,7 +172,7 @@ ilab config init --non-interactive --model-path /data/model.gguf
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
-ilab model chat --endpoint-url http://finetuned.ic-shared-llm.svc:8080/v1
+ilab model chat --endpoint-url {finetuned-endpoint}
 ----
 
 * The following should appear on the terminal:
