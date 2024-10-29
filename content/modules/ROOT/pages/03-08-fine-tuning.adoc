@@ -17,11 +17,11 @@ When customizing AI models, two techniques stand out: Retrieval-Augmented Genera
 
 * *Fine-tuning* excels when you need precise, controlled outputs for specialized tasks using curated data. It's ideal for applications where security and compliance require embedding all data within the model. Fine-tuning is also suitable when you have clear use cases with specific task requirements.
 
-image::03/rag-vs-finetuning-1.png[RAG vs Fine-Tuning]
+image::03/08-rag-vs-finetuning-1.png[RAG vs Fine-Tuning]
 
 * In contrast, *Retrieval-Augmented Generation (RAG)* is best when you need real-time access to dynamic knowledge bases, especially in environments with constantly updating information. RAG allows for scalability and handles out-of-domain queries effectively without the need for retraining, making it quick solution for improving model output. However, by providing contextual information to the model for each prompt, your expenses and computer resources may be higher than "baking-in" information into the model through fine-tuning.
 
-image::03/rag-vs-finetuning-2.png[RAG vs Fine-Tuning]
+image::03/08-rag-vs-finetuning-2.png[RAG vs Fine-Tuning]
 
 == Get Started with Fine-Tuning
 
@@ -35,7 +35,7 @@ https://instructlab.ai/[InstructLab^] is an open-source project designed to enha
 * Large-scale synthetic data generation
 * Iterative alignment tuning for continuous model improvement
 
-image::03/instructlab-components.png[InstructLab Overview]
+image::03/08-instructlab-components.png[InstructLab Overview]
 
 InstructLab is particularly useful for organizations that want to leverage private AI and keep their data in-house while still benefiting from state-of-the-art language models, without needing AI/ML or data science expertise.
 
@@ -51,13 +51,13 @@ Parasol Insurance's primary concern is ensuring that its staff is capable of han
 * Basic knowledge of the Insurance rules (e.g., offering insights on relevant local regulations)
 * Responses to general claim questions and remedies (e.g., generating product-specific email templates)
 
-image::03/parasol-insurance-chat.png[Parasol Insurance]
+image::03/08-parasol-insurance-chat.png[Parasol Insurance]
 
 === Preparing the Parasol Insurance Knowledge Base
 
 The approach of fine-tuning a model allows us to shape a language model to better understand a specific domain, and fill in the gaps in its knowledge. The InstructLab taxonomy provides a structured way to guide the model fine-tuning process, enabling us to add domain-specific knowledge to the model in a heirarchical manner, similar to the example below:
 
-image::03/instructlab-taxonomy.png[InstructLab Taxonomy]
+image::03/08-instructlab-taxonomy.png[InstructLab Taxonomy]
 
 Your role is crucial in this process. You'll see how to add  a knowledge domain to the LLM using the organization's specific information, knowledge that the LLM doesn't have and is specific to Parasol Insurance.
 
@@ -127,7 +127,11 @@ Now that we understand the constructs of the taxonomy's knowledge, let's go ahea
 
 === TODO: Add section that shows the rest of the taxonomy creation and training process
 
-https://raw.githubusercontent.com/rh-rad-ai-roadshow/dev-guides/refs/heads/main/content/modules/ROOT/pages/module-ilab.adoc[source document^]
+* https://raw.githubusercontent.com/rh-rad-ai-roadshow/dev-guides/refs/heads/main/content/modules/ROOT/pages/module-ilab.adoc[source document^]
+
+* https://github.com/rh-rad-ai-roadshow/dev-guides/[git repo^]
+
+
 
 === Interacting with the Model
 
