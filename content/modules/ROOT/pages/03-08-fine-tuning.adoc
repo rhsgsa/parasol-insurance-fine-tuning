@@ -220,8 +220,6 @@ Download {qna-url}[`qna.yaml`^] ino the `parasol` folder. "qna" is short for "qu
 curl -Lo ~/.local/share/instructlab/taxonomy/knowledge/economy/finance/insurance/parasol/qna.yaml {qna-url}
 ----
 
-=== TODO: Fix qna.yaml - it has trailing spaces
-
 And now lets also create an `attribution.txt` file for citing sources. Enter the following to download {attribution-url}[`attribution.txt`^] to the same folder `parasol`:
 
 [.console-input]
@@ -282,16 +280,12 @@ Once the generation stage is complete, you should see something like this:
 [source,console]
 ----
 $ ilab data generate --sdg-scale-factor 1
-Filter: 100%|████████████████████████████████████████████████| 42/42 [00:00<00:00, 2836.45 examples/s]
-Filter: 100%|████████████████████████████████████████████████| 28/28 [00:00<00:00, 4355.46 examples/s]
-Flattening the indices: 100%|████████████████████████████████| 22/22 [00:00<00:00, 3207.77 examples/s]
-Map: 100%|███████████████████████████████████████████████████| 22/22 [00:00<00:00, 2485.04 examples/s]
-Flattening the indices: 100%|████████████████████████████████| 20/20 [00:00<00:00, 2395.65 examples/s]
-Casting to class labels: 100%|███████████████████████████████| 20/20 [00:00<00:00, 1306.68 examples/s]
-INFO 2024-10-02 16:47:28,764 instructlab.sdg.eval_data:126: Saving MMLU Dataset /opt/app-root/src/.local/share/instructlab/datasets/node_datasets_2024-10-02T16_21_57/mmlubench_knowledge_economy_finance_insurance_parasol.jsonl
-Creating json from Arrow format: 100%|█████████████████████████████████| 1/1 [00:00<00:00, 567.10ba/s]
-INFO 2024-10-02 16:47:28,780 instructlab.sdg.eval_data:130: Saving MMLU Task yaml /opt/app-root/src/.local/share/instructlab/datasets/node_datasets_2024-10-02T16_21_57/knowledge_economy_finance_insurance_parasol_task.yaml
-Map:   0%|                                                             | 0/722 [00:00<?, ? examples/s]WARNING 2024-10-02 16:47:28,802 instructlab.sdg.datamixing:223: Failed to split generated q&a: Parasol Insurance Company', founded in 1936 by James Falkner and James Labocki, is one of the largest and most well-known auto insurance companies in the United States, offering various insurance products for personal vehicles, motorcycles, homeowners, renters, boats, RVs, life insurance, business insurance, and identity theft protection. Parasol is known for its memorable advertising campaigns, user-friendly digital platforms, and competitive pricing, as well as its strong financial strength indicated by high ratings from agencies like A.M. Best.
+Generating train split: 25 examples [00:00, 6151.81 examples/s]
+INFO 2024-10-30 23:23:49,739 instructlab.sdg.datamixing:125: Dataset columns: ['messages', 'metadata', 'id']
+INFO 2024-10-30 23:23:49,739 instructlab.sdg.datamixing:126: Dataset loaded with 25 samples
+Map (num_proc=8): 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 25/25 [00:00<00:00, 277.72 examples/s]
+Map (num_proc=8): 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 25/25 [00:00<00:00, 295.44 examples/s]
+Creating json from Arrow format: 100%|███████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 400.03ba/s]
 ----
 
 The result of this is a number of files which you can inspect in the `~/.local/share/instructlab/datasets` directory. These files are used in the following _training_ phase. Open this directory by running the following command in the Terminal:
@@ -299,24 +293,23 @@ The result of this is a number of files which you can inspect in the `~/.local/s
 [source,console]
 ----
 ls ~/.local/share/instructlab/datasets
--rw-r--r--   1 ltsai  staff       360 21 Oct 21:10 knowledge_recipe_2024-10-21T07_26_32.yaml
--rw-r--r--   1 ltsai  staff  41713091 21 Oct 21:10 knowledge_train_msgs_2024-10-21T07_26_32.jsonl
--rw-r--r--   1 ltsai  staff   2945140 21 Oct 21:10 messages_mistral-7b-instruct-v0.2.Q4_K_M_2024-10-21T07_26_32.jsonl
-drwxr-xr-x   6 ltsai  staff       192 21 Oct 21:10 node_datasets_2024-10-21T07_26_32
--rw-r--r--   1 ltsai  staff       360 21 Oct 21:10 skills_recipe_2024-10-21T07_26_32.yaml
--rw-r--r--   1 ltsai  staff  99148070 21 Oct 21:10 skills_train_msgs_2024-10-21T07_26_32.jsonl
--rw-r--r--   1 ltsai  staff     19500 21 Oct 21:10 test_gen.jsonl
--rw-r--r--   1 ltsai  staff     19500 21 Oct 21:10 test_mistral-7b-instruct-v0.2.Q4_K_M_2024-10-21T07_26_32.jsonl
--rw-r--r--   1 ltsai  staff   2622841 21 Oct 21:10 train_gen.jsonl
--rw-r--r--   1 ltsai  staff   2622841 21 Oct 21:10 train_mistral-7b-instruct-v0.2.Q4_K_M_2024-10-21T07_26_32.jsonl
+-rw-r--r--@ 1 1000910000  root       373 Oct 30 23:23 knowledge_recipe_2024-10-30T23_19_27.yaml
+-rw-r--r--@ 1 1000910000  root    140454 Oct 30 23:23 knowledge_train_msgs_2024-10-30T23_19_27.jsonl
+-rw-r--r--@ 1 1000910000  root     12538 Oct 30 23:23 messages_merlinite-7b-lab-Q4_K_M_2024-10-30T23_19_27.jsonl
+drwxr-xr-x@ 6 1000910000  root       192 Oct 30 23:23 node_datasets_2024-10-30T23_19_27
+-rw-r--r--@ 1 1000910000  root       373 Oct 30 23:23 skills_recipe_2024-10-30T23_19_27.yaml
+-rw-r--r--@ 1 1000910000  root    330227 Oct 30 23:23 skills_train_msgs_2024-10-30T23_19_27.jsonl
+-rw-r--r--@ 1 1000910000  root     43403 Oct 30 23:19 test_merlinite-7b-lab-Q4_K_M_2024-10-30T23_19_27.jsonl
+-rw-r--r--@ 1 1000910000  root     10513 Oct 30 23:23 train_merlinite-7b-lab-Q4_K_M_2024-10-30T23_19_27.jsonl
 ----
 
 You can examine the contents of the files by using the `cat` command. For example, check out the file whose name starts with `messages_merlinite`. These are sample questions generated based on the content of our Parasol data.
 
 [source,console]
 ----
-head ~/.local/share/instructlab/datasets/knowledge_train_msgs_2024-10-21T07_26_32.jsonl
-<SHOW the FILE LIST>
+head ~/.local/share/instructlab/datasets/knowledge_train_msgs_2024-10-30T23_19_27.jsonl
+{"messages":[{"content":"I am, Red Hat\u00ae Instruct Model based on Granite 7B, an AI language model developed by Red Hat and IBM Research, based on the Granite-7b-base language model. My primary function is to be a chat assistant.","role":"system"},{"content":"<|user|>\nAbout Parasol Insurance Company\n\nParasol is one of the largest and most well-known auto insurance companies in the United States. \nParasol was founded in 1936 by James Falkner and James Labocki. and a group of investors from around the world. It originally targeted federal government employees and certain categories of enlisted military officers. Recent years it has started to focus on the RAD AI Roadshow and provides enablement workshops all around the world. Parasol is a wholly owned subsidiary of
+...
 ----
 
 == Training the Model with New Data
