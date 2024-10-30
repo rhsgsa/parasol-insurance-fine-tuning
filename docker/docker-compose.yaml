@@ -34,19 +34,20 @@ services:
         echo "waiting for start file"
         sleep 5
       done
-      tail -f /dev/null
       exec antora default-site.yml
     volumes:
     - git-data:/antora/.git
     - ../default-site.yml:/antora/default-site.yml
     - ../content:/antora/content
+    - html-data:/antora/content/www
 
   nginx:
     container_name: nginx
     image: docker.io/bitnami/nginx
     volumes:
-    - ../content/www:/app
+    - html-data:/app
     ports:
     - 8080:8080
 volumes:
   git-data:
+  html-data:
