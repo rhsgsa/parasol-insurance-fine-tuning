@@ -263,22 +263,11 @@ If you do not see output similar to above, you may not have added in all of the 
 
 Now that we've added some initial data, let's use InstructLab to generate synthetic training data. Large Language Models inherently require a large amount of data to be effective, and it can be difficult to find enough real-world data for a niche domain. However, by using InstructLab, we can generate synthetic data that can be used to train the model.
 
-=== TODO: Regenerate `config.yaml` because we need the model to point to mistral
-
-== TODO: Set HF_TOKEN
-
-=== Download the model
-
-[.console-input]
-[source,bash,subs="+attributes,macros+"]
-----
-ilab model download
-----
-
 === Run the data generation command:
 
-[.console-input]
-[source,bash,subs="+attributes,macros+"]
+Because the data generation is going to take some time, we will skip the actual steps in this lab. You can continue to read to understand more about the process.
+
+[source,console]
 ----
 ilab data generate --sdg-scale-factor 1 --enable-serving-output
 ----
@@ -307,30 +296,36 @@ Map:   0%|                                                             | 0/722 [
 
 The result of this is a number of files which you can inspect in the `~/.local/share/instructlab/datasets` directory. These files are used in the following _training_ phase. Open this directory by running the following command in the Terminal:
 
-[.console-input]
-[source,bash,subs="+attributes,macros+"]
+[source,console]
 ----
 ls ~/.local/share/instructlab/datasets
+-rw-r--r--   1 ltsai  staff       360 21 Oct 21:10 knowledge_recipe_2024-10-21T07_26_32.yaml
+-rw-r--r--   1 ltsai  staff  41713091 21 Oct 21:10 knowledge_train_msgs_2024-10-21T07_26_32.jsonl
+-rw-r--r--   1 ltsai  staff   2945140 21 Oct 21:10 messages_mistral-7b-instruct-v0.2.Q4_K_M_2024-10-21T07_26_32.jsonl
+drwxr-xr-x   6 ltsai  staff       192 21 Oct 21:10 node_datasets_2024-10-21T07_26_32
+-rw-r--r--   1 ltsai  staff       360 21 Oct 21:10 skills_recipe_2024-10-21T07_26_32.yaml
+-rw-r--r--   1 ltsai  staff  99148070 21 Oct 21:10 skills_train_msgs_2024-10-21T07_26_32.jsonl
+-rw-r--r--   1 ltsai  staff     19500 21 Oct 21:10 test_gen.jsonl
+-rw-r--r--   1 ltsai  staff     19500 21 Oct 21:10 test_mistral-7b-instruct-v0.2.Q4_K_M_2024-10-21T07_26_32.jsonl
+-rw-r--r--   1 ltsai  staff   2622841 21 Oct 21:10 train_gen.jsonl
+-rw-r--r--   1 ltsai  staff   2622841 21 Oct 21:10 train_mistral-7b-instruct-v0.2.Q4_K_M_2024-10-21T07_26_32.jsonl
 ----
 
 You can examine the contents of the files by using the `cat` command. For example, check out the file whose name starts with `messages_merlinite`. These are sample questions generated based on the content of our Parasol data.
 
-=== Training the Model with New Data
+[source,console]
+----
+head ~/.local/share/instructlab/datasets/knowledge_train_msgs_2024-10-21T07_26_32.jsonl
+<SHOW the FILE LIST>
+----
+
+== Training the Model with New Data
 
 With our synthetic data generated, we should now be in a position to train the model.  Because we only created 1 sample and due to time constraints we're not going to perform the actual training in this lab.
 
 If we were to do this, we would again use the "ilab" CLI with the "model train" command. Something like `ilab model train --device cuda`. Depending on the hardware available, this can take anywhere from several minutes to several hours or days. Once this process was finished we would then have a model we can serve locally with ilab to test our results.
 
-
-=== TODO: Add section that shows the rest of the taxonomy creation and training process
-
-* https://raw.githubusercontent.com/rh-rad-ai-roadshow/dev-guides/refs/heads/main/content/modules/ROOT/pages/module-ilab.adoc[source document^]
-
-* https://github.com/rh-rad-ai-roadshow/dev-guides/[git repo^]
-
-* https://github.com/rhpds/showroom_instructlab_summit2024/blob/main/content/modules/ROOT/pages/index.adoc[Summit lab^]
-
-=== Interacting with the Model
+== Interacting with the Model
 
 A fine-tuned model has been deployed on the cluster. Let's try to chat with it.
 
@@ -378,3 +373,21 @@ ilab model chat --endpoint-url {finetuned-endpoint}
 +
 [.bordershadow]
 image::03/08-stop-workbench.png[]
+
+== InstructLab on RHEL AI
+
+You have tried the community version of InstructLab. A supported version of InstructLab is available on RHEL AI while the community version is available freely that can run on any laptop.
+
+Red Hat Enterprise Linux AI (RHEL AI) is an enterprise-grade gen AI foundation model platform to develop, test, and deploy LLMs for gen AI business use cases.
+
+RHEL AI brings together:
+
+* The Granite family of open source Apache 2.0-licensed large language models (LLMs) with complete transparency on training datasets.
+
+* InstructLab model alignment tooling, which provides a community-driven approach to LLM fine-tuning.
+
+* A bootable image of Red Hat Enterprise Linux, along with gen AI libraries and dependencies such as PyTorch and AI accelerator driver software for NVIDIA, Intel, and AMD.
+
+* Enterprise-level technical support and model intellectual property indemnification provided by Red Hat.
+
+* RHEL AI gives you the trusted Red Hat Enterprise Linux platform and adds the necessary components for you to begin your gen AI journey and see results.
