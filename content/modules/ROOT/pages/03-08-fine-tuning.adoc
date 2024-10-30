@@ -94,11 +94,13 @@ ilab model chat --endpoint-url {unfinetuned-endpoint}
 
 * Start chatting with the fine-tuned model. Ask the model some Parasol-specific questions:
 
-** Does Parasol insurance policies include  loss of income cover if the insured driver is at fault?
+** Does Parasol insurance policies include loss of income cover if the insured driver is at fault?
 
 ** Will Parasol insurance cover the cost of car rental if my car is undriveable as a result of an accident?
 
 ** What is Apex plus from parasol insurance?
+
+* Notice how the answers do not seem to make sense.
 
 * When you are done, type `exit` to exit from the chat.
 
@@ -193,7 +195,7 @@ We should create a knowledge folder structure that we can add to later as we add
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
-mkdir -p ~/taxonomy/knowledge/economy/finance/insurance/parasol
+mkdir -p ~/.local/share/instructlab/taxonomy/knowledge/economy/finance/insurance/parasol
 ----
 
 Perfect, now we have the basic working structure to add in specific knowledge about our organization.
@@ -215,15 +217,17 @@ Download {qna-url}[`qna.yaml`^] ino the `parasol` folder. "qna" is short for "qu
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
-curl -Lo ~/taxonomy/knowledge/economy/finance/insurance/parasol/qna.yaml {qna-url}
+curl -Lo ~/.local/share/instructlab/taxonomy/knowledge/economy/finance/insurance/parasol/qna.yaml {qna-url}
 ----
+
+=== TODO: Fix qna.yaml - it has trailing spaces
 
 And now lets also create an `attribution.txt` file for citing sources. Enter the following to download {attribution-url}[`attribution.txt`^] to the same folder `parasol`:
 +
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
-curl -Lo ~/taxonomy/knowledge/economy/finance/insurance/parasol/attribution.txt {attribution-url}
+curl -Lo ~/.local/share/instructlab/taxonomy/knowledge/economy/finance/insurance/parasol/attribution.txt {attribution-url}
 ----
 
 === Check that the Taxonomy is Recognized by InstructLab
@@ -260,6 +264,8 @@ If you do not see output similar to above, you may not have added in all of the 
 Now that we've added some initial data, let's use InstructLab to generate synthetic training data. Large Language Models inherently require a large amount of data to be effective, and it can be difficult to find enough real-world data for a niche domain. However, by using InstructLab, we can generate synthetic data that can be used to train the model.
 
 === TODO: Regenerate `config.yaml` because we need the model to point to mistral
+
+== TODO: Set HF_TOKEN
 
 === Download the model
 
@@ -333,7 +339,10 @@ A fine-tuned model has been deployed on the cluster. Let's try to chat with it.
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
-ilab config init --non-interactive --model-path /data/model.gguf
+# remove old config file
+rm ~/config.yaml
+
+ilab config init --non-interactive --model-path rh-rad-ai-roadshow/parasol-chat-ilab19-test
 ----
 
 * After the `config.yaml` file is generated, enter the following on the command prompt to start chatting with a pre-deployed fine-tuned model:
@@ -353,7 +362,15 @@ ilab model chat --endpoint-url {finetuned-endpoint}
 ╰────────────────────────────────────────────────────────────────────╯
 ----
 
-* Start chatting with the fine-tuned model.
+* Start chatting with the fine-tuned model. Ask the model some Parasol-specific questions:
+
+** Does Parasol insurance policies include loss of income cover if the insured driver is at fault?
+
+** Will Parasol insurance cover the cost of car rental if my car is undriveable as a result of an accident?
+
+** What is Apex plus from parasol insurance?
+
+* Notice how the answers now seem to make sense.
 
 * When you are done, type `exit` to exit from the chat, and `exit` once more to exit from the terminal.
 

@@ -5,86 +5,130 @@ metadata:
     app: finetuned
   name: finetuned
 spec:
+  progressDeadlineSeconds: 600
   replicas: 1
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: finetuned
-  strategy: {}
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: finetuned
     spec:
-      initContainers:
-      - name: download-model
-        image: ghcr.io/kwkoo/s3-utils
-        command:
-        - /bin/bash
-        - -c
-        - |
-          until curl -s -o /dev/null $AWS_ENDPOINT_URL_S3 2>/dev/null; do
-            echo "waiting for minio API..."
-            sleep 5
-          done
-          mc alias set minio $AWS_ENDPOINT_URL_S3 $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY
-          mc get minio/models/$MODEL_PATH /data/model.gguf
-        env:
-        - name: AWS_ACCESS_KEY_ID
-          value: minio
-        - name: AWS_SECRET_ACCESS_KEY
-          value: minio123
-        - name: AWS_ENDPOINT_URL_S3
-          value: "http://minio.ic-shared-minio.svc:9000"
-        - name: MC_INSECURE
-          value: "true"
-        - name: MODEL_PATH
-          value: finetuned/model.gguf
-        volumeMounts:
-        - name: data
-          mountPath: /data
+      affinity: {}
       containers:
-      - name: llama-cpp
-        image: ghcr.io/kwkoo/minimal-gpu-ilab:2024b
+      - name: server
+        # args:
+        # - --model
+        # - rh-rad-ai-roadshow/parasol-chat-ilab19-test
+        # - --download-dir
+        # - /models-cache
+        # - --dtype
+        # - float16
+        # - --max-model-len
+        # - "4096"
         command:
-        - python
-        - -m
-        - llama_cpp.server
-        - --host
-        - 0.0.0.0
-        - --port
-        - "8080"
-        - --model
-        - /data/model.gguf
-        - --n_gpu_layers
-        - "999"
+        - bash
+        - "-c"
+        - |
+          GPU_COUNT="$(echo -n $NVIDIA_VISIBLE_DEVICES | awk -F, '{ print NF }')"
+          if [ -z "$GPU_COUNT" ]; then
+            GPU_COUNT=1
+          fi
+          echo "number of gpus=$GPU_COUNT"
+          echo "args=$@"
+          exec python3 -m vllm.entrypoints.openai.api_server \
+            --port 8080 \
+            --model $MODEL \
+            --tensor-parallel-size $GPU_COUNT
+        env:
+        - name: MODEL
+          value: rh-rad-ai-roadshow/parasol-chat-ilab19-test
+        - name: HUGGING_FACE_HUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: hftoken
+        - name: HOME # needed because we need to write to $HOME/.cache
+          value: /root
+        - name: PYTHONPATH
+          value: /workspace
+        #image: quay.io/rh-aiservices-bu/vllm-openai-ubi9:0.4.2
+        image: docker.io/vllm/vllm-openai:latest
+        imagePullPolicy: IfNotPresent
         livenessProbe:
-         httpGet:
-           path: /v1/models
-           port: 8080
-         initialDelaySeconds: 600
-        readinessProbe:
-         httpGet:
-           path: /v1/models
-           port: 8080
+          failureThreshold: 3
+          httpGet:
+            path: /version
+            port: http
+            scheme: HTTP
+          periodSeconds: 100
+          successThreshold: 1
+          timeoutSeconds: 8
         ports:
         - containerPort: 8080
-        volumeMounts:
-        - name: data
-          mountPath: /data
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /version
+            port: http
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
         resources:
-          requests:
-            cpu: "1"
-            memory: 2Gi
-            nvidia.com/gpu: "1"
           limits:
+            cpu: "8"
+            memory: 24Gi
             nvidia.com/gpu: "1"
-      volumes:
-      - name: data
-        emptyDir: {}
+          requests:
+            cpu: "6"
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        startupProbe:
+          failureThreshold: 24
+          httpGet:
+            path: /version
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - name: home
+          mountPath: /root
+        - mountPath: /dev/shm
+          name: shm
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 120
       tolerations:
-      - key: nvidia.com/gpu
+      - effect: NoSchedule
+        key: nvidia.com/gpu
         operator: Exists
-        effect: NoSchedule
+      volumes:
+      - name: home
+        emptyDir: {}
+      - emptyDir:
+          medium: Memory
+          sizeLimit: 1Gi
+        name: shm
 status: {}
 ---
 apiVersion: v1
@@ -94,11 +138,20 @@ metadata:
     app: finetuned
   name: finetuned
 spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
   ports:
-  - port: 8080
+  - name: http
+    port: 8080
     protocol: TCP
-    targetPort: 8080
+    targetPort: http
   selector:
     app: finetuned
-status:
-  loadBalancer: {}
+  sessionAffinity: None
+  type: ClusterIP
+status: {}

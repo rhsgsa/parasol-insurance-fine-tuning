@@ -38,7 +38,7 @@ spec:
           mc mb minio/models
 
           echo "uploading to s3 bucket..."
-          mc put model.gguf minio/models/finetuned/
+          mc put model.gguf minio/models/unfinetuned/
         env:
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
@@ -55,7 +55,7 @@ spec:
         - name: MC_INSECURE
           value: "true"
         - name: MODEL_URL
-          value: "https://huggingface.co/ltsai/parasol-chat-ilab19-test-Q4_K_M-GGUF/resolve/main/parasol-chat-ilab19-test-q4_k_m.gguf"
+          value: "https://huggingface.co/instructlab/merlinite-7b-lab-GGUF/resolve/main/merlinite-7b-lab-Q4_K_M.gguf"
         resources: {}
       restartPolicy: Never
 status: {}

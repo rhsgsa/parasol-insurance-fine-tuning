@@ -37,6 +37,7 @@ upload-model:
 deploy-model:
 	@echo "deploying inference service..."
 	oc apply -n $(LLM_PROJ) -f $(BASE)/yaml/finetuned.yaml
+	oc apply -n $(LLM_PROJ) -f $(BASE)/yaml/unfinetuned.yaml
 
 
 .PHONY: clean-model
