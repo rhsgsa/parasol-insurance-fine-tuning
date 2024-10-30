@@ -94,7 +94,7 @@ ilab model chat --endpoint-url {unfinetuned-endpoint}
 
 * Start chatting with the fine-tuned model. Ask the model some Parasol-specific questions:
 
-** Does Parasol insurance policies include loss of income cover if the insured driver is at fault?
+** Do Parasol insurance policies include loss of income cover if the insured driver is at fault?
 
 ** Will Parasol insurance cover the cost of car rental if my car is undriveable as a result of an accident?
 
@@ -191,7 +191,7 @@ Now that we understand the constructs of the taxonomy's knowledge, let's go ahea
 ==== Create a structure for Parasol insurance knowledge
 
 We should create a knowledge folder structure that we can add to later as we add more knowledge and for our peers to also understand how its structured. Lets create a structure like this `knowledge > economy > finance > insurance > parasol`. Enter the following in the terminal:
-+
+
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
@@ -213,7 +213,7 @@ Let's now add the following taxonomy knowledge file for Parasol Insurance. Each 
 === Create knowledge file
 
 Download {qna-url}[`qna.yaml`^] ino the `parasol` folder. "qna" is short for "questions and answers". To do this, enter the following into the terminal:
-+
+
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
@@ -223,7 +223,7 @@ curl -Lo ~/.local/share/instructlab/taxonomy/knowledge/economy/finance/insurance
 === TODO: Fix qna.yaml - it has trailing spaces
 
 And now lets also create an `attribution.txt` file for citing sources. Enter the following to download {attribution-url}[`attribution.txt`^] to the same folder `parasol`:
-+
+
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
@@ -364,7 +364,7 @@ ilab model chat --endpoint-url {finetuned-endpoint}
 
 * Start chatting with the fine-tuned model. Ask the model some Parasol-specific questions:
 
-** Does Parasol insurance policies include loss of income cover if the insured driver is at fault?
+** Do Parasol insurance policies include loss of income cover if the insured driver is at fault?
 
 ** Will Parasol insurance cover the cost of car rental if my car is undriveable as a result of an accident?
 
