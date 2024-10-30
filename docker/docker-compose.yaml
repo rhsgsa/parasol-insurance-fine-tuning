@@ -1,0 +1,52 @@
+name: antora
+
+services:
+
+  git:
+    container_name: git
+    image: docker.io/bitnami/git
+    working_dir: /antora
+    command:
+    - /bin/sh
+    - "-c"
+    - |
+      git config --global user.email "user@example.com"
+      git config --global user.name "Example User"
+      git init
+      git add .
+      git commit --allow-empty -m 'init'
+      touch /antora/.git/start
+      tail -f /dev/null
+    volumes:
+    - git-data:/antora/.git
+    - ../default-site.yml:/antora/default-site.yml
+    - ../content:/antora/content
+
+  antora:
+    container_name: antora
+    image: docker.io/antora/antora
+    working_dir: /antora
+    command:
+    - /bin/sh
+    - "-c"
+    - |
+      until ls /antora/.git/start >/dev/null 2>/dev/null; do
+        echo "waiting for start file"
+        sleep 5
+      done
+      tail -f /dev/null
+      exec antora default-site.yml
+    volumes:
+    - git-data:/antora/.git
+    - ../default-site.yml:/antora/default-site.yml
+    - ../content:/antora/content
+
+  nginx:
+    container_name: nginx
+    image: docker.io/bitnami/nginx
+    volumes:
+    - ../content/www:/app
+    ports:
+    - 8080:8080
+volumes:
+  git-data:

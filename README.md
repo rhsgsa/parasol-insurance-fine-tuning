@@ -42,6 +42,16 @@ Useful link: [https://redhat-scholars.github.io/build-course/rhs-build-course/de
 - The site will be visible at [http://localhost:8443/](http://localhost:8443/)
 - When finished, you can stop serving the site by running from the root of the repo `./content/utilities/lab-stop`.
 
+### Viewing content locally
+
+You can generate the site by running antora in a docker container:
+
+	cd docker
+
+	docker compose up
+
+The generated site can get accessed at <http://localhost:8080>.
+
 ## How to update the **Application**
 
 ### Requirements
