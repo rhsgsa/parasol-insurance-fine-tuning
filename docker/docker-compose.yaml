@@ -35,6 +35,7 @@ services:
         sleep 5
       done
       exec antora default-site.yml
+      tail -f /dev/null
     volumes:
     - git-data:/antora/.git
     - ../default-site.yml:/antora/default-site.yml
