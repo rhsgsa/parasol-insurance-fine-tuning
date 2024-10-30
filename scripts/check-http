@@ -1,0 +1,57 @@
+#!/bin/bash
+
+NAMESPACE=ic-shared-llm
+HOSTNAME=$1
+PORT=$2
+JOB_NAME=test-service
+
+if [ -z "$HOSTNAME" ] || [ -z "$PORT" ]; then
+  echo "Usage: $0 <hostname> <port>"
+  exit 1
+fi
+
+echo "Cleaning up the Job..."
+oc delete job $JOB_NAME -n $NAMESPACE
+
+echo "Creating a Job to test connection to $HOSTNAME on port $PORT..."
+
+cat <<EOF | oc apply -f -
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: $JOB_NAME
+  namespace: $NAMESPACE
+spec:
+  template:
+    spec:
+      containers:
+      - name: curl-container
+        image: curlimages/curl:latest
+        command: ["sh", "-c"]
+        args:
+          - |
+            URL="http://$HOSTNAME:$PORT"
+            echo "Testing connection to \$URL"
+            if curl -o /dev/null -w "%{http_code}" \$URL; then
+              echo "Connection successful!"
+              exit 0
+            else
+              echo "Connection failed!"
+              exit 1
+            fi
+      restartPolicy: Never
+  backoffLimit: 1
+EOF
+
+echo "Waiting for the Job to complete..."
+oc wait --for=condition=complete --timeout=60s job/$JOB_NAME -n $NAMESPACE
+
+JOB_STATUS=$(oc get job $JOB_NAME -n $NAMESPACE -o jsonpath='{.status.succeeded}')
+if [ "$JOB_STATUS" == "1" ]; then
+  echo "Curl test succeeded!"
+else
+  echo "$(tput setaf 1)Curl test failed. See logs for more details.$(tput sgr0)"
+fi
+
+echo "Cleaning up the Job..."
+oc delete job $JOB_NAME -n $NAMESPACE

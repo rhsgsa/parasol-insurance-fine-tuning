@@ -37,8 +37,12 @@ upload-model:
 deploy-model:
 	@echo "deploying inference service..."
 	oc apply -n $(LLM_PROJ) -f $(BASE)/yaml/finetuned.yaml
-	oc apply -n $(LLM_PROJ) -f $(BASE)/yaml/unfinetuned.yaml
+	oc rollout status deploy/finetuned -n ic-shared-llm --timeout=300s
+	@scripts/check-http finetuned.ic-shared-llm.svc.cluster.local 8080
 
+	oc apply -n $(LLM_PROJ) -f $(BASE)/yaml/unfinetuned.yaml
+	oc rollout status deploy/unfinetuned -n ic-shared-llm --timeout=300s
+	@scripts/check-http unfinetuned.ic-shared-llm.svc.cluster.local 8080
 
 .PHONY: clean-model
 clean-model:
