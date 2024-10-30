@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+oc whoami >/dev/null
+
+export APPS_DOMAIN=$(oc whoami --show-server | sed -E 's|https://api\.||; s|:6443||')
+echo $APPS_DOMAIN
+for proj in $(oc get projects -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep ^user); do
+  echo $proj
+  export USER=$proj
+  envsubst < yaml/notebook.yaml.tmpl | oc apply -f -
+done

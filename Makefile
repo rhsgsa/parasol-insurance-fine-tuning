@@ -4,7 +4,7 @@ LLM_PROJ=ic-shared-llm
 BASE:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: deploy
-deploy: import-notebook-image upload-model deploy-model modify-showroom-git-repo
+deploy: import-notebook-image upload-model deploy-model modify-showroom-git-repo deploy-workbench
 
 .PHONY: import-notebook-image
 import-notebook-image:
@@ -49,3 +49,7 @@ clean-model:
 .PHONY: modify-showroom-git-repo
 modify-showroom-git-repo:
 	$(BASE)/scripts/modify-showroom-git-repo
+
+.PHONY: deploy-workbench
+deploy-workbench:
+	$(BASE)/scripts/deploy-workbench

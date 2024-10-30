@@ -1,0 +1,183 @@
+apiVersion: kubeflow.org/v1
+kind: Notebook
+metadata:
+  annotations:
+    notebooks.opendatahub.io/inject-oauth: 'true'
+    opendatahub.io/image-display-name: Instructlab
+    notebooks.opendatahub.io/oauth-logout-url: >-
+      https://rhods-dashboard-redhat-ods-applications.$APP_DOMAIN_NAME/projects/$USER?notebookLogout=ilab
+    opendatahub.io/accelerator-name: ''
+    openshift.io/description: ''
+    openshift.io/display-name: ilab
+    notebooks.opendatahub.io/last-image-selection: 'instructlab:2024b'
+    #notebooks.opendatahub.io/last-size-selection: Standard
+    opendatahub.io/username: $USER
+  name: ilab  
+  namespace: $USER
+  labels:
+    app: ilab
+    opendatahub.io/dashboard: 'true'
+    opendatahub.io/odh-managed: 'true'
+    opendatahub.io/user: $USER
+spec:
+  template:
+    spec:
+      affinity: {}
+      containers:
+        - resources:
+            limits:
+              cpu: 100m
+              memory: 300Mi
+            requests:
+              cpu: '50m'
+              memory: 100Mi
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /notebook/$USER/ilab/api
+              port: notebook-port
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: ilab
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /notebook/$USER/ilab/api
+              port: notebook-port
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          env:
+            - name: NOTEBOOK_ARGS
+              value: |-
+                --ServerApp.port=8888
+                                  --ServerApp.token=''
+                                  --ServerApp.password=''
+                                  --ServerApp.base_url=/notebook/$USER/ilab
+                                  --ServerApp.quit_button=False
+                                  --ServerApp.tornado_settings={"user":"$USER","hub_host":"https://rhods-dashboard-redhat-ods-applications.$APP_DOMAIN_NAME","hub_prefix":"/projects/$USER"}
+            - name: JUPYTER_IMAGE
+              value: >-
+                image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/instructlab:2024b
+            - name: PIP_CERT
+              value: /etc/pki/tls/custom-certs/ca-bundle.crt
+            - name: REQUESTS_CA_BUNDLE
+              value: /etc/pki/tls/custom-certs/ca-bundle.crt
+            - name: SSL_CERT_FILE
+              value: /etc/pki/tls/custom-certs/ca-bundle.crt
+            - name: PIPELINES_SSL_SA_CERTS
+              value: /etc/pki/tls/custom-certs/ca-bundle.crt
+          ports:
+            - containerPort: 8888
+              name: notebook-port
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            #- mountPath: /opt/app-root/src
+            #  name: ilab
+            #- mountPath: /opt/app-root/runtimes
+            #  name: elyra-dsp-details
+            - mountPath: /dev/shm
+              name: shm
+            - mountPath: /etc/pki/tls/custom-certs/ca-bundle.crt
+              name: trusted-ca
+              readOnly: true
+              subPath: ca-bundle.crt
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/instructlab:2024b
+          workingDir: /opt/app-root/src
+        - resources:
+            limits:
+              cpu: 100m
+              memory: 64Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /oauth/healthz
+              port: oauth-proxy
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: oauth-proxy
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /oauth/healthz
+              port: oauth-proxy
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - containerPort: 8443
+              name: oauth-proxy
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /etc/oauth/config
+              name: oauth-config
+            - mountPath: /etc/tls/private
+              name: tls-certificates
+          image: >-
+            registry.redhat.io/openshift4/ose-oauth-proxy@sha256:4bef31eb993feb6f1096b51b4876c65a6fb1f4401fee97fa4f4542b6b7c9bc46
+          args:
+            - '--provider=openshift'
+            - '--https-address=:8443'
+            - '--http-address='
+            - '--openshift-service-account=ilab'
+            - '--cookie-secret-file=/etc/oauth/config/cookie_secret'
+            - '--cookie-expire=24h0m0s'
+            - '--tls-cert=/etc/tls/private/tls.crt'
+            - '--tls-key=/etc/tls/private/tls.key'
+            - '--upstream=http://localhost:8888'
+            - '--upstream-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+            - '--email-domain=*'
+            - '--skip-provider-button'
+            - >-
+              --openshift-sar={"verb":"get","resource":"notebooks","resourceAPIGroup":"kubeflow.org","resourceName":"ilab","namespace":"$(NAMESPACE)"}
+            - >-
+              --logout-url=https://rhods-dashboard-redhat-ods-applications.$APP_DOMAIN_NAME/projects/$USER?notebookLogout=ilab
+      enableServiceLinks: false
+      serviceAccountName: ilab
+      volumes:
+        # - name: ilab
+        #   persistentVolumeClaim:
+        #     claimName: ilab
+        - name: elyra-dsp-details
+          secret:
+            secretName: ds-pipeline-config
+        - emptyDir:
+            medium: Memory
+          name: shm
+        - configMap:
+            items:
+              - key: ca-bundle.crt
+                path: ca-bundle.crt
+            name: workbench-trusted-ca-bundle
+            optional: true
+          name: trusted-ca
+        - name: oauth-config
+          secret:
+            defaultMode: 420
+            secretName: ilab-oauth-config
+        - name: tls-certificates
+          secret:
+            defaultMode: 420
+            secretName: ilab-tls
+
