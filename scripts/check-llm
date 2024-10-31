@@ -1,0 +1,32 @@
+#/usr/bin/env python3
+
+import os
+import argparse
+from openai import OpenAI
+
+# Set up argument parsing
+parser = argparse.ArgumentParser(description="Test a vLLM endpoint using OpenAI's updated API client.")
+parser.add_argument("--url", required=True, help="The vLLM endpoint URL (e.g., http://localhost:8080/v1)")
+parser.add_argument("--model", required=True, help="The model name to use for completion.")
+parser.add_argument("--prompt", required=True, help="The prompt to send to the vLLM endpoint.")
+parser.add_argument("--max_tokens", type=int, default=2048, help="The maximum number of tokens to generate (default: 150).")
+parser.add_argument("--temperature", type=float, default=0.2, help="The sampling temperature (default: 0.7).")
+
+args = parser.parse_args()
+
+# Initialize the OpenAI client with the URL from arguments
+client = OpenAI(api_key="EMPTY", base_url=args.url)
+
+# Create a completion request using the model and prompt from arguments
+completion = client.chat.completions.create(
+    model=args.model,
+    messages=[
+        {"role": "system", "content": "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."},
+        {"role": "user", "content": args.prompt},
+    ],
+    max_tokens=args.max_tokens,
+    temperature=args.temperature
+)
+
+# Print the response from the chat
+print("Chat response:", completion.choices[0].message.content)
