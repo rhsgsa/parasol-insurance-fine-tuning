@@ -35,7 +35,7 @@ asciidoc:
     company-name: "Parasol Insurance"
     ic-lab: "lab"
     ic: "{company-name} {ic-lab}"
-    unfinetuned-endpoint: http://unfinetuned.ic-shared-llm.svc:8080/v1
+    unfinetuned-endpoint: http://llm.ic-shared-llm.svc.cluster.local:8080/v1
     finetuned-endpoint: http://finetuned.ic-shared-llm.svc:8080/v1
     qna-url: https://raw.githubusercontent.com/rh-rad-ai-roadshow/parasol-taxonomy/refs/heads/main/knowledge/economy/finance/insurance/parasol/qna.yaml
     attribution-url: https://raw.githubusercontent.com/rh-rad-ai-roadshow/parasol-taxonomy/refs/heads/main/knowledge/economy/finance/insurance/parasol/attribution.txt

@@ -86,7 +86,7 @@ image::03/08-launcher.png[]
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
-ilab config init --non-interactive --model-path /data/model.gguf
+ilab config init --non-interactive --model-path mistralai/Mistral-7B-Instruct-v0.2
 ----
 
 * After the `config.yaml` file is generated, enter the following on the command prompt to start chatting with a pre-deployed fine-tuned model:
