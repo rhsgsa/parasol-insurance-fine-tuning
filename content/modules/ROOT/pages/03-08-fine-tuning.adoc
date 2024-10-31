@@ -50,7 +50,17 @@ If you are using the customized version of the instructions, the information bel
 
 == Go to your project
 
+* The {rhoai} Dashboard URL for our shared environment:
+** https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}/[https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}/,window=_blank]
+* Click on the `Login with OpenShift` button:
++
+[.bordershadow]
+image::02/02-01-login3.png[width=50%]
+* Enter your credentials (as detailed above)
++
+
 * First, in the {rhoai} Dashboard application, navigate to the Data Science Projects menu on the left:
+
 +
 [.bordershadow]
 image::02/02-02-ds-proj-nav.png[]
