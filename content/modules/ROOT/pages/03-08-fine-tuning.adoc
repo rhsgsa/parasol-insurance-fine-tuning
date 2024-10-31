@@ -67,7 +67,9 @@ image::02/02-02-ds-proj-nav.png[]
 
 * Then, open the project called {user}.
 
-* Inside the project you should see a `ilab` workbench has been pre-created
+* Inside the project you should see a `ilab` workbench has been pre-created. 
+
+You can ignore the unknown container size warning.
 +
 [.bordershadow]
 image::03/08-ilab-workbench.png[]
