@@ -9,9 +9,20 @@ oc whoami >/dev/null
 
 for proj in $(oc get projects -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep showroom-); do
   echo $proj
+
+  # Solve RWO pvc multi-attach.
+  if [[ $(oc get deploy/showroom -n $proj -o jsonpath='{.spec.strategy.type}') != "Recreate" ]]; then
+    oc patch deploy/showroom --type=json -p='[{"op": "remove", "path": "/spec/strategy/rollingUpdate"}, {"op": "replace", "path": "/spec/strategy/type", "value": "Recreate"}]' -n $proj
+  fi
+
   oc set env \
     -n $proj \
     deploy/showroom \
     GIT_REPO_URL=$GIT_REPO_URL \
     GIT_REPO_REF=$GIT_REPO_REF
 done
+
+for proj in $(oc get projects -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep showroom-); do
+  echo $proj
+  oc rollout status deploy/showroom -n $proj --timeout=120s || echo "$(tput setaf 1)Showroom not ready$(tput sgr0)"
+  done
