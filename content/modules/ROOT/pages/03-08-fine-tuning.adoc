@@ -41,26 +41,30 @@ InstructLab is particularly useful for organizations that want to leverage priva
 
 As you work with InstructLab, you will see the terms _Skills_ and _Knowledge_. What is the difference between Skills and Knowledge? A simple analogy is to think of a skill as teaching someone how to fish. Knowledge, on the other hand, is knowing that the best place to catch a Bass is when the sun is setting while casting your line near the trunk of a tree along the bank.
 
-== Chatting with the Un-Finetuned Model
+== Environment information
 
-Before we proceed with fine-tuning the model, let's try chatting with a model that has not been fine-tuned yet.
+If you are using the customized version of the instructions, the information below will render properly. If not, you will see placeholder values instead.
 
-* Open the https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}/[{rhoai} Dashboard application,window=_blank] in a new window or tab and navigate to the Data Science Projects menu on the left:
+* Your account id: `{user}`
+* Your password: `{password}`
+
+== Go to your project
+
+* First, in the {rhoai} Dashboard application, navigate to the Data Science Projects menu on the left:
 +
 [.bordershadow]
 image::02/02-02-ds-proj-nav.png[]
 
-* Open the project called {user} and click the `Create workbench` button:
+* Then, open the project called {user}.
+
+* Inside the project you should see a `ilab` workbench has been pre-created
 +
 [.bordershadow]
-image::03/08-create-workbench.png[]
+image::03/08-ilab-workbench.png[]
 
-* Set the `Name` field to `ilab`, the `Image selection` field to `Instructlab`, the `Container size` field to `Standard`, the `Accelerator` field to `None`, and click the `Create workbench` button.
-+
-[.bordershadow]
-image::03/08-create-workbench-form.png[]
+* To connect to the `ilab` workbench, click the **Open** link
 
-* After the workbench has started, click on the `Open` link to open the workbench in a new tab or window.
+== Chatting with the Un-Finetuned Model
 
 * Click on the `Terminal` icon in the Launcher:
 +
@@ -218,6 +222,7 @@ Download {qna-url}[`qna.yaml`^] ino the `parasol` folder. "qna" is short for "qu
 [source,bash,subs="+attributes,macros+"]
 ----
 curl -Lo ~/.local/share/instructlab/taxonomy/knowledge/economy/finance/insurance/parasol/qna.yaml {qna-url}
+sed -i '' -e '${/^ *$/d;}'  ~/.local/share/instructlab/taxonomy/knowledge/economy/finance/insurance/parasol/qna.yaml
 ----
 
 And now lets also create an `attribution.txt` file for citing sources. Enter the following to download {attribution-url}[`attribution.txt`^] to the same folder `parasol`:
