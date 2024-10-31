@@ -4,7 +4,7 @@ LLM_PROJ=ic-shared-llm
 BASE:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: deploy
-deploy: import-notebook-image upload-model deploy-model modify-showroom-git-repo deploy-workbench restart-showroom
+deploy: import-notebook-image deploy-model modify-showroom-git-repo deploy-workbench restart-showroom
 
 .PHONY: import-notebook-image
 import-notebook-image:
@@ -43,9 +43,9 @@ deploy-model:
 	oc rollout status deploy/finetuned -n ic-shared-llm --timeout=600s
 	@scripts/check-http finetuned.ic-shared-llm.svc.cluster.local 8080
 
-	oc apply -n $(LLM_PROJ) -f $(BASE)/yaml/unfinetuned.yaml
-	oc rollout status deploy/unfinetuned -n ic-shared-llm --timeout=600s
-	@scripts/check-http unfinetuned.ic-shared-llm.svc.cluster.local 8080
+	# oc apply -n $(LLM_PROJ) -f $(BASE)/yaml/unfinetuned.yaml
+	# oc rollout status deploy/unfinetuned -n ic-shared-llm --timeout=600s
+	# @scripts/check-http unfinetuned.ic-shared-llm.svc.cluster.local 8080
 
 .PHONY: clean-model
 clean-model:
