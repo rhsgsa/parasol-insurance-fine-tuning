@@ -35,6 +35,9 @@ upload-model:
 
 .PHONY: deploy-model
 deploy-model:
+	@echo "scale machineset"
+	@scripts/scale-machineset
+
 	@echo "deploying inference service..."
 	oc apply -n $(LLM_PROJ) -f $(BASE)/yaml/finetuned.yaml
 	oc rollout status deploy/finetuned -n ic-shared-llm --timeout=600s

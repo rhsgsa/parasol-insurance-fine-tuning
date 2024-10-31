@@ -1,0 +1,46 @@
+#!/bin/bash
+# By GPT
+
+# Set the namespace
+NAMESPACE="openshift-machine-api"
+
+# Variables
+MACHINESET_NAME=""      # Variable to hold the machineset name
+REPLICAS=2              # Number of replicas to scale to
+SLEEP_DURATION=30       # Sleep duration between readiness checks (in seconds)
+MAX_CHECKS=10           # Maximum number of checks to perform
+
+# Get the first machineset with GPU
+MACHINESET_NAME=$(oc get machinesets -n $NAMESPACE --no-headers | grep "gpu" | awk '{print $1}' | head -n 1)
+
+# Check if a machineset was found
+if [ -z "$MACHINESET_NAME" ]; then
+  echo "No GPU machineset found."
+  exit 1
+fi
+
+echo "Found GPU machineset: $MACHINESET_NAME"
+
+# Scale the machineset to the specified number of replicas
+echo "Scaling $MACHINESET_NAME to $REPLICAS replicas..."
+oc scale machineset $MACHINESET_NAME --replicas=$REPLICAS -n $NAMESPACE
+
+# Check for readiness with a fixed number of checks
+echo "Checking if $MACHINESET_NAME reaches the desired count of $REPLICAS replicas..."
+
+for (( i=1; i<=$MAX_CHECKS; i++ )); do
+  CURRENT_READY=$(oc get machineset $MACHINESET_NAME -n $NAMESPACE --no-headers | awk '{print $4}')
+  
+  # Check if the current ready count matches the desired count
+  if [ "$CURRENT_READY" -eq "$REPLICAS" ]; then
+    echo "$MACHINESET_NAME is ready with $CURRENT_READY replicas."
+    exit 0
+  else
+    echo "Check $i: Waiting for $MACHINESET_NAME... (Ready: $CURRENT_READY / Desired: $REPLICAS)"
+    sleep $SLEEP_DURATION
+  fi
+done
+
+# If the desired count is not reached after all checks
+echo "Error: $MACHINESET_NAME did not reach the desired count of $REPLICAS replicas after $MAX_CHECKS checks."
+exit 1
