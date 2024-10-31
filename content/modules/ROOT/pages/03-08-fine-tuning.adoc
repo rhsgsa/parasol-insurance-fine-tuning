@@ -272,7 +272,7 @@ Taxonomy in /opt/app-root/src/.local/share/instructlab/taxonomy is valid :)
 
 If you do not see output similar to above, you may not have added in all of the Q&A file. This is important as the model will use this file to generate synthetic data in the next section.
 
-== Generating Synthetic Training Data & Training the New Model
+== Generating Synthetic Training Data (For reading)
 
 Now that we've added some initial data, let's use InstructLab to generate synthetic training data. Large Language Models inherently require a large amount of data to be effective, and it can be difficult to find enough real-world data for a niche domain. However, by using InstructLab, we can generate synthetic data that can be used to train the model.
 
