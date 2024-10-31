@@ -114,6 +114,8 @@ ilab model chat --endpoint-url {unfinetuned-endpoint}
 
 ** What is Apex plus from parasol insurance?
 
+** Who owns parasol insurance?
+
 * Notice how the answers do not seem to make sense.
 
 * When you are done, type `exit` to exit from the chat.
@@ -372,6 +374,8 @@ ilab model chat --endpoint-url {finetuned-endpoint}
 ** Will Parasol insurance cover the cost of car rental if my car is undriveable as a result of an accident?
 
 ** What is Apex plus from parasol insurance?
+
+** Who owns parasol insurance?
 
 * Notice how the answers now seem to make sense.
 
