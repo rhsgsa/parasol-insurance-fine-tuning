@@ -232,7 +232,7 @@ Download {qna-url}[`qna.yaml`^] ino the `parasol` folder. "qna" is short for "qu
 [source,bash,subs="+attributes,macros+"]
 ----
 curl -Lo ~/.local/share/instructlab/taxonomy/knowledge/economy/finance/insurance/parasol/qna.yaml {qna-url}
-sed -i '' -e '${/^ *$/d;}'  ~/.local/share/instructlab/taxonomy/knowledge/economy/finance/insurance/parasol/qna.yaml
+sed -i -e '${/^ *$/d;}'  ~/.local/share/instructlab/taxonomy/knowledge/economy/finance/insurance/parasol/qna.yaml
 ----
 
 And now lets also create an `attribution.txt` file for citing sources. Enter the following to download {attribution-url}[`attribution.txt`^] to the same folder `parasol`:
