@@ -25,4 +25,4 @@ done
 for proj in $(oc get projects -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep showroom-); do
   echo $proj
   oc rollout status deploy/showroom -n $proj --timeout=120s || echo "$(tput setaf 1)Showroom not ready$(tput sgr0)"
-  done
+done
