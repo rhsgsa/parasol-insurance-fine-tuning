@@ -95,7 +95,7 @@ ilab config init --non-interactive --model-path mistralai/Mistral-7B-Instruct-v0
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
-ilab model chat --endpoint-url {unfinetuned-endpoint}
+ilab model chat --endpoint-url {unfinetuned-endpoint} --max-tokens 2048 -gm
 ----
 
 * The following should appear on the terminal:
@@ -115,7 +115,7 @@ ilab model chat --endpoint-url {unfinetuned-endpoint}
 
 ** What is Apex plus from parasol insurance?
 
-** Who owns parasol insurance?
+** Who owns parasol insurance company?
 
 * Notice how the answers do not seem to make sense.
 
@@ -356,7 +356,7 @@ ilab config init --non-interactive --model-path rh-rad-ai-roadshow/parasol-chat-
 [.console-input]
 [source,bash,subs="+attributes,macros+"]
 ----
-ilab model chat --endpoint-url {finetuned-endpoint}
+ilab model chat --endpoint-url {finetuned-endpoint} --max-tokens 2048 -gm
 ----
 
 * The following should appear on the terminal:
@@ -376,7 +376,7 @@ ilab model chat --endpoint-url {finetuned-endpoint}
 
 ** What is Apex plus from parasol insurance?
 
-** Who owns parasol insurance?
+** Who owns parasol insurance company?
 
 * Notice how the answers now seem to make sense.
 
