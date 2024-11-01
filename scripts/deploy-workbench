@@ -13,5 +13,5 @@ done
 
 for proj in $(oc get projects -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep ^user); do
   echo $proj
-  kubectl wait --for=condition=ready pod/ilab-0 -n $proj --timeout=60s || echo "$(tput setaf 1)Workbench not ready$(tput sgr0)"
+  kubectl wait --for=condition=ready pod/ilab-0 -n $proj --timeout=120s || echo "$(tput setaf 1)Workbench not ready$(tput sgr0)"
 done
