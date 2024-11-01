@@ -35,7 +35,7 @@ upload-model:
 
 .PHONY: deploy-model
 deploy-model:
-	@echo "scale machineset"
+	@echo "Scale machineset"
 	@scripts/scale-machineset
 
 	@echo "deploying inference service..."
