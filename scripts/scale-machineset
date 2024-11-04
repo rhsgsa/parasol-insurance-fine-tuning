@@ -15,7 +15,7 @@ CURRENT_GPU_NODES=$(oc get nodes -l nvidia.com/gpu.present=true --no-headers | w
 
 if [ "$CURRENT_GPU_NODES" -ge 2 ]; then
   echo "Total GPU nodes are already 2 or more. Scaling is not needed."
-  exit 1
+  exit 0
 fi
 
 # Get the first machineset with GPU
