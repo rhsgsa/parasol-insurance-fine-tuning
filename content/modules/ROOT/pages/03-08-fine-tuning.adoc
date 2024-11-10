@@ -41,7 +41,7 @@ InstructLab is particularly useful for organizations that want to leverage priva
 
 As you work with InstructLab, you will see the terms _Skills_ and _Knowledge_. What is the difference between Skills and Knowledge? A simple analogy is to think of a skill as teaching someone how to fish. Knowledge, on the other hand, is knowing that the best place to catch a Bass is when the sun is setting while casting your line near the trunk of a tree along the bank.
 
-video::4lguiHJHgfo[youtube, height=480, weight=854]
+video::4lguiHJHgfo[youtube, height=854, weight=480]
 
 == Environment information
 
