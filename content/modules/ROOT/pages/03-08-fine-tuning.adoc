@@ -278,60 +278,13 @@ Taxonomy in /opt/app-root/src/.local/share/instructlab/taxonomy is valid :)
 
 If you do not see output similar to above, you may not have added in all of the Q&A file. This is important as the model will use this file to generate synthetic data in the next section.
 
-== Generating Synthetic Training Data (For reading)
+== Generating Synthetic Training Data 
 
 Now that we've added some initial data, let's use InstructLab to generate synthetic training data. Large Language Models inherently require a large amount of data to be effective, and it can be difficult to find enough real-world data for a niche domain. However, by using InstructLab, we can generate synthetic data that can be used to train the model.
 
-=== Run the data generation command:
+Because the data generation is going to take some time, we will skip the actual steps in this lab. The data generation command is `ilab data generate`.
 
-Because the data generation is going to take some time, we will skip the actual steps in this lab. You can continue to read to understand more about the process.
-
-[source,console]
-----
-ilab data generate --sdg-scale-factor 1 --enable-serving-output
-----
-
-To reduce the amount of time the generation process takes, we are setting the *"--sdg-scale-factor"* to `1` (The number of instructions to generate for each seed
-example), the default for this value is `30`. If we were generating data for a production deployment we would likely set this value higher.
-
-This process may take some time (up to 25 minutes for this lab), depending on the amount of data and the computational resources available. Feel free to wait, or stop the process with kbd:[CTRL+C] as we will not be using these files in the next step in the interest of time.
-
-Once the generation stage is complete, you should see something like this:
-
-[source,console]
-----
-$ ilab data generate --sdg-scale-factor 1
-Generating train split: 25 examples [00:00, 6151.81 examples/s]
-INFO 2024-10-30 23:23:49,739 instructlab.sdg.datamixing:125: Dataset columns: ['messages', 'metadata', 'id']
-INFO 2024-10-30 23:23:49,739 instructlab.sdg.datamixing:126: Dataset loaded with 25 samples
-Map (num_proc=8): 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 25/25 [00:00<00:00, 277.72 examples/s]
-Map (num_proc=8): 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 25/25 [00:00<00:00, 295.44 examples/s]
-Creating json from Arrow format: 100%|███████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 400.03ba/s]
-----
-
-The result of this is a number of files which you can inspect in the `~/.local/share/instructlab/datasets` directory. These files are used in the following _training_ phase. Open this directory by running the following command in the Terminal:
-
-[source,console]
-----
-ls ~/.local/share/instructlab/datasets
--rw-r--r--@ 1 1000910000  root       373 Oct 30 23:23 knowledge_recipe_2024-10-30T23_19_27.yaml
--rw-r--r--@ 1 1000910000  root    140454 Oct 30 23:23 knowledge_train_msgs_2024-10-30T23_19_27.jsonl
--rw-r--r--@ 1 1000910000  root     12538 Oct 30 23:23 messages_merlinite-7b-lab-Q4_K_M_2024-10-30T23_19_27.jsonl
-drwxr-xr-x@ 6 1000910000  root       192 Oct 30 23:23 node_datasets_2024-10-30T23_19_27
--rw-r--r--@ 1 1000910000  root       373 Oct 30 23:23 skills_recipe_2024-10-30T23_19_27.yaml
--rw-r--r--@ 1 1000910000  root    330227 Oct 30 23:23 skills_train_msgs_2024-10-30T23_19_27.jsonl
--rw-r--r--@ 1 1000910000  root     43403 Oct 30 23:19 test_merlinite-7b-lab-Q4_K_M_2024-10-30T23_19_27.jsonl
--rw-r--r--@ 1 1000910000  root     10513 Oct 30 23:23 train_merlinite-7b-lab-Q4_K_M_2024-10-30T23_19_27.jsonl
-----
-
-You can examine the contents of the files by using the `cat` command. For example, check out the file whose name starts with `messages_merlinite`. These are sample questions generated based on the content of our Parasol data.
-
-[source,console]
-----
-head ~/.local/share/instructlab/datasets/knowledge_train_msgs_2024-10-30T23_19_27.jsonl
-{"messages":[{"content":"I am, Red Hat\u00ae Instruct Model based on Granite 7B, an AI language model developed by Red Hat and IBM Research, based on the Granite-7b-base language model. My primary function is to be a chat assistant.","role":"system"},{"content":"<|user|>\nAbout Parasol Insurance Company\n\nParasol is one of the largest and most well-known auto insurance companies in the United States. \nParasol was founded in 1936 by James Falkner and James Labocki. and a group of investors from around the world. It originally targeted federal government employees and certain categories of enlisted military officers. Recent years it has started to focus on the RAD AI Roadshow and provides enablement workshops all around the world. Parasol is a wholly owned subsidiary of
-...
-----
+The result of this is a number of files which you can inspect in the `~/.local/share/instructlab/datasets` directory. 
 
 == Training the Model with New Data
 
