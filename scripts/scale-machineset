@@ -8,7 +8,7 @@ NAMESPACE="openshift-machine-api"
 MACHINESET_NAME=""      # Variable to hold the machineset name
 REPLICAS=2              # Number of replicas to scale to
 SLEEP_DURATION=30       # Sleep duration between readiness checks (in seconds)
-MAX_CHECKS=10           # Maximum number of checks to perform
+MAX_CHECKS=15           # Maximum number of checks to perform
 
 # Check the current total number of GPU nodes
 CURRENT_GPU_NODES=$(oc get nodes -l nvidia.com/gpu.present=true --no-headers | wc -l)
