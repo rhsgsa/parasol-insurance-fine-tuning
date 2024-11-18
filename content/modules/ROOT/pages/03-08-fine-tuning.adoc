@@ -303,7 +303,7 @@ A fine-tuned model has been deployed on the cluster. Let's try to chat with it.
 # remove old config file
 rm ~/.config/instructlab/config.yaml
 
-ilab config init --non-interactive --model-path rh-rad-ai-roadshow/parasol-chat-ilab19-test
+ilab config init --non-interactive --model-path {finetuned-model}
 ----
 
 * After the `config.yaml` file is generated, enter the following on the command prompt to start chatting with a pre-deployed fine-tuned model:

@@ -46,12 +46,12 @@ spec:
             --tensor-parallel-size $GPU_COUNT
         env:
         - name: MODEL
-          value: rh-rad-ai-roadshow/parasol-chat-ilab19-test
-        - name: HUGGING_FACE_HUB_TOKEN
-          valueFrom:
-            secretKeyRef:
-              key: token
-              name: hftoken
+          value: rh-rad-ai-roadshow/parasol-trained-chat
+        #- name: HUGGING_FACE_HUB_TOKEN
+        #  valueFrom:
+        #    secretKeyRef:
+        #      key: token
+        #      name: hftoken
         - name: HOME # needed because we need to write to $HOME/.cache
           value: /root
         - name: PYTHONPATH
